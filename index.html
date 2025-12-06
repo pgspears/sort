@@ -1,0 +1,2736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoVis Masterclass | The Science of Computation</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Theme Core - Midnight Observatory */
+            --bg-deep: #030712;
+            --bg-panel: #0a0f1a;
+            --bg-card: #111827;
+            --bg-elevated: #1f2937;
+            --border: #1f2937;
+            --border-bright: #374151;
+            
+            /* Typography */
+            --text-main: #f9fafb;
+            --text-secondary: #e5e7eb;
+            --text-muted: #9ca3af;
+            --text-dim: #6b7280;
+            --font-display: 'Outfit', sans-serif;
+            --font-code: 'JetBrains Mono', monospace;
+            --font-read: 'Crimson Pro', serif;
+
+            /* Algorithmic Spectrum - Vivid Performance Colors */
+            --c-bar: #374151;
+            --c-compare: #fbbf24;   /* Amber - Active comparison */
+            --c-swap: #f43f5e;      /* Rose - Swap operation */
+            --c-write: #a78bfa;     /* Violet - Write operation */
+            --c-sorted: #34d399;    /* Emerald - Sorted state */
+            --c-accent: #06b6d4;    /* Cyan - Primary accent */
+            --c-accent-bright: #22d3ee;
+            
+            /* Leaderboard Ranking Colors */
+            --gold: #fbbf24;
+            --silver: #9ca3af;
+            --bronze: #d97706;
+            
+            /* Gradients */
+            --gradient-hero: linear-gradient(135deg, #06b6d4 0%, #8b5cf6 50%, #f43f5e 100%);
+            --gradient-card: linear-gradient(180deg, rgba(17,24,39,1) 0%, rgba(10,15,26,1) 100%);
+            --gradient-glow: radial-gradient(ellipse at center, rgba(6,182,212,0.15) 0%, transparent 70%);
+        }
+
+        /* RESET & BASE */
+        * { box-sizing: border-box; outline: none; -webkit-font-smoothing: antialiased; }
+        body { 
+            margin: 0; 
+            background: var(--bg-deep); 
+            color: var(--text-main); 
+            font-family: var(--font-display); 
+            height: 100vh; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(6, 182, 212, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(244, 63, 94, 0.04) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* --- SCROLLBAR STYLING --- */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-deep); }
+        ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--c-accent); }
+
+        /* --- HEADER --- */
+        header {
+            height: 70px; 
+            background: rgba(10, 15, 26, 0.95); 
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            padding: 0 1.5rem;
+            flex-shrink: 0; 
+            z-index: 50; 
+            position: relative;
+        }
+        
+        .brand { 
+            font-weight: 700; 
+            font-size: 1.4rem; 
+            letter-spacing: -0.5px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+        }
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: var(--gradient-hero);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            color: #000;
+            box-shadow: 0 4px 15px rgba(6, 182, 212, 0.3);
+        }
+        .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
+        .brand-text span { color: var(--text-muted); font-weight: 400; font-size: 0.65rem; letter-spacing: 2px; text-transform: uppercase; }
+
+        .controls { display: flex; gap: 1rem; align-items: center; }
+        
+        .slider-box { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 4px; 
+            background: var(--bg-card);
+            padding: 8px 14px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+        }
+        .slider-box label { 
+            font-size: 0.6rem; 
+            font-weight: 600; 
+            letter-spacing: 1px; 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .slider-box label b { color: var(--c-accent); font-family: var(--font-code); font-size: 0.75rem; }
+        input[type="range"] { 
+            -webkit-appearance: none; 
+            background: var(--border); 
+            height: 4px; 
+            border-radius: 2px; 
+            width: 100px; 
+        }
+        input[type="range"]::-webkit-slider-thumb { 
+            -webkit-appearance: none; 
+            width: 14px; 
+            height: 14px; 
+            background: var(--c-accent); 
+            border-radius: 50%; 
+            cursor: pointer; 
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2);
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { 
+            transform: scale(1.15); 
+            box-shadow: 0 0 0 5px rgba(6, 182, 212, 0.3);
+        }
+
+        .btn-group { 
+            display: flex; 
+            gap: 6px; 
+            background: var(--bg-card); 
+            padding: 4px; 
+            border-radius: 12px; 
+            border: 1px solid var(--border); 
+        }
+        button {
+            background: transparent; 
+            border: none; 
+            color: var(--text-main);
+            padding: 0.55rem 1rem; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-family: var(--font-display);
+            font-size: 0.8rem; 
+            font-weight: 600; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        button:hover { background: var(--bg-elevated); color: var(--c-accent); }
+        button.primary { 
+            background: var(--c-accent); 
+            color: #000; 
+            box-shadow: 0 2px 10px rgba(6, 182, 212, 0.3);
+        }
+        button.primary:hover { 
+            opacity: 0.9; 
+            color: #000; 
+            background: var(--c-accent-bright); 
+            box-shadow: 0 4px 20px rgba(6, 182, 212, 0.4);
+        }
+        button:disabled { opacity: 0.4; cursor: not-allowed; }
+        button.active { background: var(--c-accent); color: #000; }
+
+        /* --- TAB BUTTONS --- */
+        .view-tabs {
+            display: flex;
+            gap: 4px;
+            background: var(--bg-card);
+            padding: 4px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+        .view-tabs button { padding: 0.5rem 0.9rem; }
+        .view-tabs button.active { background: var(--c-accent); color: #000; }
+
+        /* --- MAIN GRID --- */
+        main { flex: 1; display: flex; position: relative; overflow: hidden; z-index: 1; }
+        
+        #grid-area {
+            flex: 1; 
+            padding: 1.25rem; 
+            overflow-y: auto;
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            grid-auto-rows: 300px; 
+            gap: 1.25rem;
+        }
+
+        /* --- LEADERBOARD VIEW --- */
+        #leaderboard-area {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+            display: none;
+        }
+        #leaderboard-area.active { display: block; }
+        #grid-area.hidden { display: none; }
+
+        .leaderboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .leaderboard-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .leaderboard-header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 0 0.5rem 0;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .leaderboard-header p {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin: 0;
+        }
+
+        .leaderboard-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-hero);
+        }
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            font-family: var(--font-code);
+            color: var(--c-accent);
+            margin-bottom: 0.25rem;
+        }
+        .stat-card .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .leaderboard-table {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+        .leaderboard-table-header {
+            display: grid;
+            grid-template-columns: 60px 2fr 1fr 1fr 1fr 1fr 1fr 120px;
+            padding: 1rem 1.5rem;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+        .leaderboard-row {
+            display: grid;
+            grid-template-columns: 60px 2fr 1fr 1fr 1fr 1fr 1fr 120px;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+            transition: background 0.2s;
+        }
+        .leaderboard-row:hover { background: var(--bg-elevated); }
+        .leaderboard-row:last-child { border-bottom: none; }
+        
+        .rank-badge {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+        .rank-1 { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: #000; box-shadow: 0 2px 10px rgba(251, 191, 36, 0.3); }
+        .rank-2 { background: linear-gradient(135deg, #9ca3af, #6b7280); color: #000; }
+        .rank-3 { background: linear-gradient(135deg, #d97706, #b45309); color: #000; }
+        .rank-default { background: var(--bg-elevated); color: var(--text-muted); }
+
+        .algo-name {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .algo-name .complexity-badge {
+            font-family: var(--font-code);
+            font-size: 0.65rem;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: var(--bg-deep);
+            color: var(--text-muted);
+        }
+
+        .metric-cell {
+            font-family: var(--font-code);
+            font-size: 0.85rem;
+        }
+        .metric-cell.best { color: var(--c-sorted); font-weight: 700; }
+        .metric-cell.worst { color: var(--c-swap); opacity: 0.7; }
+
+        .time-bar-container {
+            width: 100%;
+            height: 8px;
+            background: var(--bg-deep);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .time-bar {
+            height: 100%;
+            background: var(--gradient-hero);
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        /* Complexity Comparison Chart */
+        .complexity-chart {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+        .complexity-chart h3 {
+            margin: 0 0 1rem 0;
+            font-size: 1.1rem;
+            font-weight: 700;
+        }
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        .chart-canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* --- VISUALIZER CARD --- */
+        .card {
+            background: var(--gradient-card);
+            border: 1px solid var(--border); 
+            border-radius: 16px;
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            position: relative;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+            transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+        }
+        .card:hover { 
+            border-color: var(--border-bright); 
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
+        }
+        .card.winner {
+            border-color: var(--gold);
+            box-shadow: 0 0 30px rgba(251, 191, 36, 0.2);
+        }
+        .card.winner::before {
+            content: '🏆';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5rem;
+            z-index: 10;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .card-header {
+            padding: 0.75rem 1rem; 
+            border-bottom: 1px solid var(--border); 
+            background: rgba(10, 15, 26, 0.5);
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+        }
+        .card-title { 
+            font-weight: 700; 
+            font-size: 0.9rem; 
+            letter-spacing: -0.01em; 
+            display: flex; 
+            align-items: center; 
+            gap: 8px;
+        }
+        .complexity-badge { 
+            font-family: var(--font-code); 
+            font-size: 0.6rem; 
+            padding: 3px 8px; 
+            border-radius: 6px; 
+            background: var(--bg-deep); 
+            color: var(--c-accent);
+            border: 1px solid var(--border);
+        }
+        .tag-badge {
+            font-family: var(--font-display);
+            font-size: 0.55rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .tag-badge.stable { border-color: var(--c-sorted); color: var(--c-sorted); }
+        .tag-badge.inplace { border-color: var(--c-accent); color: var(--c-accent); }
+        
+        .metrics-row { 
+            display: flex; 
+            gap: 16px; 
+            font-family: var(--font-code); 
+            font-size: 0.7rem; 
+            color: var(--text-muted); 
+            padding: 0.5rem 1rem; 
+            border-bottom: 1px solid rgba(31, 41, 55, 0.5); 
+            background: rgba(3, 7, 18, 0.5);
+        }
+        .metric { display: flex; align-items: center; gap: 4px; }
+        .metric span { font-weight: 400; opacity: 0.7; }
+        .metric b { font-weight: 700; }
+        .metric.cmp b { color: var(--c-compare); }
+        .metric.acc b { color: var(--c-write); }
+        .metric.mem b { color: var(--c-accent); }
+        .metric.time b { color: var(--c-sorted); }
+
+        .canvas { 
+            flex: 1; 
+            position: relative; 
+            display: flex; 
+            align-items: flex-end; 
+            padding: 12px 10px 0 10px; 
+            gap: 1px; 
+            background: 
+                radial-gradient(ellipse at 50% 100%, rgba(6, 182, 212, 0.03) 0%, transparent 60%);
+        }
+        
+        .bar { 
+            flex: 1; 
+            background: var(--c-bar); 
+            border-radius: 2px 2px 0 0; 
+            transition: height 0.04s linear, background 0.1s, box-shadow 0.1s; 
+            min-width: 2px;
+            position: relative;
+        }
+        .bar.cmp { 
+            background: var(--c-compare) !important; 
+            box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+        }
+        .bar.swap { 
+            background: var(--c-swap) !important; 
+            box-shadow: 0 0 15px var(--c-swap); 
+            z-index: 2; 
+        }
+        .bar.write { 
+            background: var(--c-write) !important; 
+            box-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+        }
+        .bar.sorted { 
+            background: var(--c-sorted) !important; 
+        }
+        .bar.pivot {
+            background: var(--c-accent) !important;
+            box-shadow: 0 0 12px rgba(6, 182, 212, 0.6);
+        }
+
+        .log-strip {
+            height: 28px; 
+            background: var(--bg-deep); 
+            border-top: 1px solid var(--border);
+            font-family: var(--font-code); 
+            font-size: 0.65rem; 
+            color: var(--text-dim);
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            padding: 0 1rem;
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis;
+        }
+        .log-strip .status { display: flex; align-items: center; gap: 6px; }
+        .log-strip .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text-dim);
+        }
+        .log-strip .status-dot.running { background: var(--c-compare); animation: blink 0.5s infinite; }
+        .log-strip .status-dot.complete { background: var(--c-sorted); }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* --- SCIENCE SIDEBAR --- */
+        .sidebar {
+            width: 580px; 
+            background: #0a0f1a; 
+            border-left: 1px solid var(--border);
+            display: flex; 
+            flex-direction: column; 
+            position: fixed; 
+            right: 0; 
+            top: 0; 
+            bottom: 0; 
+            z-index: 200;
+            transform: translateX(100%); 
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: -20px 0 60px rgba(0,0,0,0.8);
+            isolation: isolate;
+        }
+        .sidebar.open { transform: translateX(0); }
+        
+        .sidebar-header {
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid var(--border);
+            background: #030712;
+            position: relative;
+        }
+        .sidebar-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: var(--gradient-hero);
+        }
+        .sidebar-title { 
+            font-size: 0.75rem; 
+            font-weight: 700; 
+            color: #22d3ee; 
+            letter-spacing: 2px; 
+            text-transform: uppercase; 
+            margin-bottom: 4px; 
+            display: block; 
+        }
+        .sidebar-main-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0;
+            line-height: 1.2;
+            color: #ffffff;
+        }
+        .sidebar-subtitle { 
+            font-size: 0.85rem; 
+            color: #9ca3af; 
+            margin-top: 4px;
+        }
+        .close-sidebar {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: #1f2937;
+            border: 1px solid #374151;
+            color: #e5e7eb;
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1rem;
+        }
+        .close-sidebar:hover { color: #22d3ee; border-color: #06b6d4; background: #111827; }
+
+        /* Chapter Navigation with Scroll Arrows */
+        .chapter-nav-container {
+            position: relative;
+            border-bottom: 1px solid var(--border);
+            background: #111827;
+        }
+        .chapter-nav-scroll {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(90deg, #111827 60%, transparent);
+            cursor: pointer;
+            z-index: 5;
+            color: var(--text-muted);
+            transition: color 0.2s;
+        }
+        .chapter-nav-scroll:hover { color: var(--c-accent); }
+        .chapter-nav-scroll.left { left: 0; }
+        .chapter-nav-scroll.right { 
+            right: 0; 
+            background: linear-gradient(-90deg, #111827 60%, transparent);
+        }
+        .chapter-nav {
+            display: flex; 
+            overflow-x: auto; 
+            gap: 6px; 
+            padding: 12px 50px; 
+            scrollbar-width: none;
+            scroll-behavior: smooth;
+        }
+        .chapter-nav::-webkit-scrollbar { display: none; }
+        .chapter-btn {
+            background: #1f2937; 
+            border: 1px solid #374151; 
+            padding: 8px 14px;
+            color: #e5e7eb; 
+            font-size: 0.75rem; 
+            font-weight: 500;
+            border-radius: 8px; 
+            white-space: nowrap;
+            cursor: pointer; 
+            transition: all 0.2s;
+            font-family: var(--font-display);
+        }
+        .chapter-btn:hover { color: #ffffff; background: #374151; border-color: #4b5563; }
+        .chapter-btn.active { 
+            background: rgba(6, 182, 212, 0.2); 
+            color: #22d3ee; 
+            border-color: #06b6d4;
+            font-weight: 600;
+        }
+
+        .book-body { 
+            flex: 1; 
+            overflow-y: auto; 
+            padding: 2rem 2.5rem; 
+            scroll-behavior: smooth;
+            background: #0a0f1a;
+        }
+        
+        /* Textbook Typography */
+        .article h1 { 
+            font-family: var(--font-display); 
+            font-size: 2.2rem; 
+            font-weight: 800; 
+            margin-bottom: 0.75rem; 
+            line-height: 1.15; 
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+        .article h2 { 
+            font-family: var(--font-display); 
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            margin-top: 2.5rem; 
+            margin-bottom: 1rem; 
+            color: #ffffff; 
+            border-left: 3px solid var(--c-accent); 
+            padding-left: 1rem; 
+        }
+        .article h3 { 
+            font-family: var(--font-display); 
+            font-size: 1.05rem; 
+            font-weight: 600; 
+            margin-top: 1.75rem; 
+            margin-bottom: 0.75rem; 
+            color: var(--c-accent-bright);
+        }
+        .article p { 
+            font-family: var(--font-read); 
+            font-size: 1.05rem; 
+            line-height: 1.85; 
+            color: #e5e7eb; 
+            margin-bottom: 1.5rem; 
+        }
+        .article ul { 
+            margin-bottom: 1.5rem; 
+            padding-left: 1.5rem; 
+            color: #e5e7eb; 
+            font-family: var(--font-read); 
+            line-height: 1.85;
+            font-size: 1.05rem;
+        }
+        .article li { margin-bottom: 0.75rem; }
+        .article strong { color: #ffffff; }
+        .article em { color: var(--c-accent-bright); font-style: italic; }
+        
+        .callout {
+            background: linear-gradient(135deg, rgba(6, 182, 212, 0.15), rgba(139, 92, 246, 0.1));
+            border: 1px solid rgba(6, 182, 212, 0.4);
+            border-radius: 12px; 
+            padding: 1.5rem; 
+            margin: 2rem 0;
+            position: relative;
+        }
+        .callout::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-hero);
+            border-radius: 4px 0 0 4px;
+        }
+        .callout-title { 
+            font-family: var(--font-display); 
+            font-weight: 700; 
+            color: #22d3ee; 
+            margin-bottom: 0.5rem; 
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-transform: uppercase; 
+            font-size: 0.7rem; 
+            letter-spacing: 1px;
+        }
+        .callout p { margin: 0; font-size: 0.95rem; color: #e5e7eb; }
+
+        .insight-box {
+            background: rgba(52, 211, 153, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .insight-box .callout-title { color: #34d399; }
+
+        .warning-box {
+            background: rgba(244, 63, 94, 0.15);
+            border: 1px solid rgba(244, 63, 94, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+        .warning-box .callout-title { color: #f43f5e; }
+
+        .code-block {
+            background: #030712; 
+            border: 1px solid #374151; 
+            border-radius: 10px;
+            padding: 1.25rem; 
+            font-family: var(--font-code); 
+            font-size: 0.85rem; 
+            color: #c4b5fd;
+            overflow-x: auto; 
+            margin: 1.5rem 0;
+            line-height: 1.6;
+        }
+        .code-block .keyword { color: #f472b6; }
+        .code-block .comment { color: #6b7280; }
+        .code-block .string { color: #34d399; }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-family: var(--font-code);
+            font-size: 0.8rem;
+        }
+        .comparison-table th,
+        .comparison-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        .comparison-table th {
+            background: var(--bg-deep);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.65rem;
+            letter-spacing: 1px;
+        }
+        .comparison-table td { color: var(--text-secondary); }
+        .comparison-table .good { color: var(--c-sorted); }
+        .comparison-table .bad { color: var(--c-swap); }
+        .comparison-table .neutral { color: var(--c-compare); }
+
+        /* --- TOOLTIP OVERLAY --- */
+        #tooltip-box {
+            position: fixed; 
+            background: rgba(10, 15, 26, 0.95); 
+            border: 1px solid var(--border-bright); 
+            color: var(--text-main);
+            padding: 12px 16px; 
+            border-radius: 10px; 
+            font-size: 0.8rem; 
+            pointer-events: none;
+            z-index: 1000; 
+            opacity: 0; 
+            transition: opacity 0.15s; 
+            max-width: 300px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            font-family: var(--font-display);
+            line-height: 1.5;
+        }
+        #tooltip-box strong { 
+            display: block; 
+            color: var(--c-accent); 
+            margin-bottom: 6px; 
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* Mask for Sidebar */
+        .overlay-mask {
+            position: fixed; 
+            top: 0;
+            left: 0;
+            right: 580px;
+            bottom: 0;
+            background: rgba(3, 7, 18, 0.7); 
+            opacity: 0; 
+            pointer-events: none;
+            transition: opacity 0.3s; 
+            z-index: 90;
+        }
+        .overlay-mask.active { opacity: 1; pointer-events: auto; }
+
+        /* --- LEGEND --- */
+        .legend {
+            position: fixed;
+            bottom: 1rem;
+            left: 1rem;
+            background: rgba(10, 15, 26, 0.9);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            display: flex;
+            gap: 1rem;
+            font-size: 0.7rem;
+            z-index: 50;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: var(--text-muted);
+        }
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+        .legend-color.compare { background: var(--c-compare); }
+        .legend-color.swap { background: var(--c-swap); }
+        .legend-color.write { background: var(--c-write); }
+        .legend-color.sorted { background: var(--c-sorted); }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .leaderboard-stats { grid-template-columns: repeat(2, 1fr); }
+            .leaderboard-table-header,
+            .leaderboard-row { 
+                grid-template-columns: 50px 1.5fr 1fr 1fr 1fr 100px; 
+            }
+            .leaderboard-table-header > *:nth-child(5),
+            .leaderboard-table-header > *:nth-child(6),
+            .leaderboard-row > *:nth-child(5),
+            .leaderboard-row > *:nth-child(6) { display: none; }
+        }
+        @media (max-width: 768px) {
+            header { padding: 0 1rem; }
+            .controls { gap: 0.5rem; }
+            .slider-box { display: none; }
+            #grid-area { grid-template-columns: 1fr; padding: 1rem; }
+            .sidebar { width: 100%; }
+            .overlay-mask { right: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="tooltip-box"></div>
+<div id="mask" class="overlay-mask" onclick="app.toggleSidebar(false)"></div>
+
+<header>
+    <div class="brand">
+        <div class="brand-icon"><i class="fas fa-chart-bar"></i></div>
+        <div class="brand-text">
+            AlgoVis Masterclass
+            <span>Interactive Algorithm Laboratory</span>
+        </div>
+    </div>
+
+    <div class="controls">
+        <div class="slider-box">
+            <label>Array Size <b id="sizeVal">60</b></label>
+            <input type="range" id="sizeSlider" min="20" max="200" value="60" oninput="app.resize(this.value)">
+        </div>
+        
+        <div class="slider-box">
+            <label>Speed <b id="speedVal">80</b>%</label>
+            <input type="range" id="speedSlider" min="1" max="100" value="80" oninput="app.setSpeed(this.value)">
+        </div>
+
+        <div class="view-tabs">
+            <button id="viewGrid" class="active" onclick="app.setView('grid')">
+                <i class="fas fa-th"></i> Visualizers
+            </button>
+            <button id="viewLeaderboard" onclick="app.setView('leaderboard')">
+                <i class="fas fa-trophy"></i> Leaderboard
+            </button>
+        </div>
+
+        <div class="btn-group">
+            <button onclick="app.raceMode()" data-tooltip="race">
+                <i class="fas fa-flag-checkered"></i> Race
+            </button>
+            <button onclick="app.resetAll()" data-tooltip="reset">
+                <i class="fas fa-rotate-left"></i>
+            </button>
+            <button class="primary" id="btnStart" onclick="app.startAll()" data-tooltip="run">
+                <i class="fas fa-play"></i> Run All
+            </button>
+        </div>
+
+        <button onclick="app.toggleSidebar(true)" style="border: 1px solid var(--c-accent); color: var(--c-accent)">
+            <i class="fas fa-book-open"></i> Learn
+        </button>
+    </div>
+</header>
+
+<main>
+    <div id="grid-area"></div>
+    
+    <div id="leaderboard-area">
+        <div class="leaderboard-container">
+            <div class="leaderboard-header">
+                <h1>🏆 Algorithm Leaderboard</h1>
+                <p>Real-time performance comparison across all sorting algorithms</p>
+            </div>
+            
+            <div class="leaderboard-stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-fastest">--</div>
+                    <div class="stat-label">Fastest Algorithm</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-fewest-cmp">--</div>
+                    <div class="stat-label">Fewest Comparisons</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-fewest-mem">--</div>
+                    <div class="stat-label">Lowest Memory Access</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="stat-completed">0/0</div>
+                    <div class="stat-label">Algorithms Completed</div>
+                </div>
+            </div>
+
+            <div class="leaderboard-table">
+                <div class="leaderboard-table-header">
+                    <div>Rank</div>
+                    <div>Algorithm</div>
+                    <div>Comparisons</div>
+                    <div>Memory Ops</div>
+                    <div>Aux Space</div>
+                    <div>Stability</div>
+                    <div>Best Case</div>
+                    <div>Progress</div>
+                </div>
+                <div id="leaderboard-body"></div>
+            </div>
+
+            <div class="complexity-chart">
+                <h3><i class="fas fa-chart-line" style="color: var(--c-accent); margin-right: 8px;"></i>Time Complexity Visualization</h3>
+                <canvas id="complexityCanvas" class="chart-canvas"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <aside id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <button class="close-sidebar" onclick="app.toggleSidebar(false)">
+                <i class="fas fa-times"></i>
+            </button>
+            <span class="sidebar-title">Computer Science Theory</span>
+            <h2 class="sidebar-main-title">The Science of Sorting</h2>
+            <p class="sidebar-subtitle">From Ancient Mathematics to Quantum Computing</p>
+        </div>
+        <div class="chapter-nav-container">
+            <div class="chapter-nav-scroll left" onclick="app.scrollChapters(-1)">
+                <i class="fas fa-chevron-left"></i>
+            </div>
+            <div class="chapter-nav" id="chapterNav"></div>
+            <div class="chapter-nav-scroll right" onclick="app.scrollChapters(1)">
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+        <div class="book-body">
+            <div id="bookContent" class="article"></div>
+        </div>
+    </aside>
+</main>
+
+<div class="legend">
+    <div class="legend-item"><div class="legend-color compare"></div> Comparing</div>
+    <div class="legend-item"><div class="legend-color swap"></div> Swapping</div>
+    <div class="legend-item"><div class="legend-color write"></div> Writing</div>
+    <div class="legend-item"><div class="legend-color sorted"></div> Sorted</div>
+</div>
+
+<script>
+/**
+ * -----------------------------------------------------------------------
+ * AUDIO ENGINE (Synthesizer)
+ * -----------------------------------------------------------------------
+ */
+const AudioEngine = {
+    ctx: null,
+    gain: null,
+    enabled: true,
+    
+    init() {
+        if (!this.ctx) {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+            this.gain = this.ctx.createGain();
+            this.gain.connect(this.ctx.destination);
+            this.gain.gain.value = 0.03;
+        }
+    },
+
+    play(val, max) {
+        if (!this.ctx || !this.enabled) return;
+        const osc = this.ctx.createOscillator();
+        const g = this.ctx.createGain();
+        
+        const norm = val / max;
+        const freq = 150 + (norm * 600);
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+        
+        g.connect(this.gain);
+        osc.connect(g);
+        
+        g.gain.setValueAtTime(0, this.ctx.currentTime);
+        g.gain.linearRampToValueAtTime(0.08, this.ctx.currentTime + 0.01);
+        g.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.08);
+        
+        osc.start();
+        osc.stop(this.ctx.currentTime + 0.08);
+    }
+};
+
+/**
+ * -----------------------------------------------------------------------
+ * ALGORITHM DEFINITIONS
+ * -----------------------------------------------------------------------
+ */
+const ALGOS = {
+    bubble: {
+        name: "Bubble Sort",
+        tags: ["Stable", "O(n²)", "Educational"],
+        avgComplexity: "O(n²)",
+        bestComplexity: "O(n)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(1)",
+        stable: true,
+        inPlace: true,
+        gen: function*(arr) {
+            let n = arr.length;
+            for (let i = 0; i < n - 1; i++) {
+                let swapped = false;
+                for (let j = 0; j < n - i - 1; j++) {
+                    yield { type: 'cmp', idx: [j, j+1], msg: `Comparing elements at positions ${j} and ${j+1}` };
+                    if (arr[j] > arr[j + 1]) {
+                        yield { type: 'swap', idx: [j, j+1], msg: `Swapping ${arr[j]} and ${arr[j+1]}` };
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                        swapped = true;
+                    }
+                }
+                yield { type: 'sorted', idx: [n - i - 1] };
+                if (!swapped) break;
+            }
+            for (let i = 0; i < n; i++) yield { type: 'sorted', idx: [i] };
+        }
+    },
+    selection: {
+        name: "Selection Sort",
+        tags: ["Unstable", "O(n²)", "Min Swaps"],
+        avgComplexity: "O(n²)",
+        bestComplexity: "O(n²)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(1)",
+        stable: false,
+        inPlace: true,
+        gen: function*(arr) {
+            let n = arr.length;
+            for (let i = 0; i < n; i++) {
+                let min = i;
+                for (let j = i + 1; j < n; j++) {
+                    yield { type: 'cmp', idx: [j, min], msg: `Finding minimum in unsorted region` };
+                    if (arr[j] < arr[min]) min = j;
+                }
+                if (min !== i) {
+                    yield { type: 'swap', idx: [i, min], msg: `Moving minimum to position ${i}` };
+                    [arr[i], arr[min]] = [arr[min], arr[i]];
+                }
+                yield { type: 'sorted', idx: [i] };
+            }
+        }
+    },
+    insertion: {
+        name: "Insertion Sort",
+        tags: ["Stable", "O(n²)", "Adaptive"],
+        avgComplexity: "O(n²)",
+        bestComplexity: "O(n)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(1)",
+        stable: true,
+        inPlace: true,
+        gen: function*(arr) {
+            yield { type: 'sorted', idx: [0] };
+            for (let i = 1; i < arr.length; i++) {
+                let key = arr[i];
+                let j = i - 1;
+                yield { type: 'cmp', idx: [i], msg: `Inserting element ${key}` };
+                while (j >= 0 && arr[j] > key) {
+                    yield { type: 'cmp', idx: [j], msg: `Shifting element ${arr[j]}` };
+                    arr[j + 1] = arr[j];
+                    yield { type: 'write', idx: [j + 1], val: arr[j] };
+                    j--;
+                }
+                arr[j + 1] = key;
+                yield { type: 'write', idx: [j + 1], val: key, msg: `Placed ${key} at position ${j+1}` };
+                for(let k=0; k<=i; k++) yield { type: 'sorted', idx: [k] };
+            }
+        }
+    },
+    quick: {
+        name: "Quick Sort",
+        tags: ["Unstable", "O(n log n)", "In-Place"],
+        avgComplexity: "O(n log n)",
+        bestComplexity: "O(n log n)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(log n)",
+        stable: false,
+        inPlace: true,
+        gen: function*(arr) {
+            yield* qs(arr, 0, arr.length - 1);
+            for(let i=0; i<arr.length; i++) yield { type: 'sorted', idx: [i] };
+
+            function* qs(arr, l, h) {
+                if (l < h) {
+                    let p = yield* partition(arr, l, h);
+                    yield* qs(arr, l, p - 1);
+                    yield* qs(arr, p + 1, h);
+                } else if (l === h) {
+                     yield { type: 'sorted', idx: [l] };
+                }
+            }
+            function* partition(arr, l, h) {
+                let pivot = arr[h];
+                yield { type: 'pivot', idx: [h], msg: `Pivot selected: ${pivot}` };
+                let i = l - 1;
+                for (let j = l; j <= h - 1; j++) {
+                    yield { type: 'cmp', idx: [j, h], msg: `Comparing ${arr[j]} with pivot ${pivot}` };
+                    if (arr[j] < pivot) {
+                        i++;
+                        yield { type: 'swap', idx: [i, j] };
+                        [arr[i], arr[j]] = [arr[j], arr[i]];
+                    }
+                }
+                yield { type: 'swap', idx: [i + 1, h], msg: `Placing pivot at position ${i+1}` };
+                [arr[i + 1], arr[h]] = [arr[h], arr[i + 1]];
+                yield { type: 'sorted', idx: [i+1] };
+                return i + 1;
+            }
+        }
+    },
+    merge: {
+        name: "Merge Sort",
+        tags: ["Stable", "O(n log n)", "Aux Space"],
+        avgComplexity: "O(n log n)",
+        bestComplexity: "O(n log n)",
+        worstComplexity: "O(n log n)",
+        spaceComplexity: "O(n)",
+        stable: true,
+        inPlace: false,
+        gen: function*(arr) {
+            yield* sort(arr, 0, arr.length - 1);
+            for(let i=0; i<arr.length; i++) yield { type: 'sorted', idx: [i] };
+
+            function* sort(arr, l, r) {
+                if (l >= r) return;
+                let m = l + Math.floor((r - l) / 2);
+                yield* sort(arr, l, m);
+                yield* sort(arr, m + 1, r);
+                yield* merge(arr, l, m, r);
+            }
+            function* merge(arr, l, m, r) {
+                let n1 = m - l + 1;
+                let n2 = r - m;
+                let L = arr.slice(l, m+1);
+                let R = arr.slice(m+1, r+1);
+                let i=0, j=0, k=l;
+                while(i < n1 && j < n2) {
+                    yield { type: 'cmp', idx: [l+i, m+1+j], msg: `Merging subarrays` }; 
+                    if(L[i] <= R[j]) {
+                        arr[k] = L[i];
+                        yield { type: 'write', idx: [k], val: L[i] };
+                        i++;
+                    } else {
+                        arr[k] = R[j];
+                        yield { type: 'write', idx: [k], val: R[j] };
+                        j++;
+                    }
+                    k++;
+                }
+                while(i < n1) {
+                    arr[k] = L[i];
+                    yield { type: 'write', idx: [k], val: L[i] };
+                    i++; k++;
+                }
+                while(j < n2) {
+                    arr[k] = R[j];
+                    yield { type: 'write', idx: [k], val: R[j] };
+                    j++; k++;
+                }
+            }
+        }
+    },
+    heap: {
+        name: "Heap Sort",
+        tags: ["Unstable", "O(n log n)", "In-Place"],
+        avgComplexity: "O(n log n)",
+        bestComplexity: "O(n log n)",
+        worstComplexity: "O(n log n)",
+        spaceComplexity: "O(1)",
+        stable: false,
+        inPlace: true,
+        gen: function*(arr) {
+            let n = arr.length;
+            for (let i = Math.floor(n / 2) - 1; i >= 0; i--) yield* heapify(arr, n, i);
+            for (let i = n - 1; i > 0; i--) {
+                yield { type: 'swap', idx: [0, i], msg: `Extracting max element` };
+                [arr[0], arr[i]] = [arr[i], arr[0]];
+                yield { type: 'sorted', idx: [i] };
+                yield* heapify(arr, i, 0);
+            }
+            yield { type: 'sorted', idx: [0] };
+
+            function* heapify(arr, n, i) {
+                let largest = i;
+                let l = 2 * i + 1;
+                let r = 2 * i + 2;
+                if (l < n) {
+                    yield { type: 'cmp', idx: [l, largest], msg: `Heapifying: checking left child` };
+                    if (arr[l] > arr[largest]) largest = l;
+                }
+                if (r < n) {
+                    yield { type: 'cmp', idx: [r, largest], msg: `Heapifying: checking right child` };
+                    if (arr[r] > arr[largest]) largest = r;
+                }
+                if (largest !== i) {
+                    yield { type: 'swap', idx: [i, largest] };
+                    [arr[i], arr[largest]] = [arr[largest], arr[i]];
+                    yield* heapify(arr, n, largest);
+                }
+            }
+        }
+    },
+    shell: {
+        name: "Shell Sort",
+        tags: ["Unstable", "O(n log² n)", "Gap Sequence"],
+        avgComplexity: "O(n log² n)",
+        bestComplexity: "O(n log n)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(1)",
+        stable: false,
+        inPlace: true,
+        gen: function*(arr) {
+            let n = arr.length;
+            for (let gap = Math.floor(n/2); gap > 0; gap = Math.floor(gap/2)) {
+                yield { type: 'msg', msg: `Gap size: ${gap}` };
+                for (let i = gap; i < n; i++) {
+                    let temp = arr[i];
+                    let j;
+                    for (j = i; j >= gap; j -= gap) {
+                        yield { type: 'cmp', idx: [j-gap, i], msg: `Comparing with gap ${gap}` }; 
+                        if (arr[j - gap] > temp) {
+                            arr[j] = arr[j - gap];
+                            yield { type: 'write', idx: [j], val: arr[j] };
+                        } else {
+                            break;
+                        }
+                    }
+                    arr[j] = temp;
+                    yield { type: 'write', idx: [j], val: temp };
+                }
+            }
+            for (let i = 0; i < n; i++) yield { type: 'sorted', idx: [i] };
+        }
+    },
+    cocktail: {
+        name: "Cocktail Shaker",
+        tags: ["Stable", "O(n²)", "Bidirectional"],
+        avgComplexity: "O(n²)",
+        bestComplexity: "O(n)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(1)",
+        stable: true,
+        inPlace: true,
+        gen: function*(arr) {
+            let swapped = true;
+            let start = 0;
+            let end = arr.length;
+            while (swapped) {
+                swapped = false;
+                for (let i = start; i < end - 1; ++i) {
+                    yield { type: 'cmp', idx: [i, i+1], msg: `Forward pass` };
+                    if (arr[i] > arr[i + 1]) {
+                        yield { type: 'swap', idx: [i, i+1] };
+                        [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+                        swapped = true;
+                    }
+                }
+                yield { type: 'sorted', idx: [end-1] };
+                if (!swapped) break;
+                swapped = false;
+                end--;
+                for (let i = end - 1; i >= start; i--) {
+                    yield { type: 'cmp', idx: [i, i+1], msg: `Backward pass` };
+                    if (arr[i] > arr[i + 1]) {
+                        yield { type: 'swap', idx: [i, i+1] };
+                        [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+                        swapped = true;
+                    }
+                }
+                yield { type: 'sorted', idx: [start] };
+                start++;
+            }
+            for (let i = 0; i < arr.length; i++) yield { type: 'sorted', idx: [i] };
+        }
+    },
+    gnome: {
+        name: "Gnome Sort",
+        tags: ["Stable", "O(n²)", "Simple"],
+        avgComplexity: "O(n²)",
+        bestComplexity: "O(n)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(1)",
+        stable: true,
+        inPlace: true,
+        gen: function*(arr) {
+            let i = 0;
+            while (i < arr.length) {
+                if (i === 0 || arr[i] >= arr[i - 1]) {
+                    if(i > 0) yield { type: 'cmp', idx: [i, i-1], msg: `Position ${i} is correct` };
+                    i++;
+                } else {
+                    yield { type: 'cmp', idx: [i, i-1] };
+                    yield { type: 'swap', idx: [i, i-1], msg: `Moving back from position ${i}` };
+                    [arr[i], arr[i - 1]] = [arr[i - 1], arr[i]];
+                    i--;
+                }
+            }
+            for(let i=0; i<arr.length; i++) yield { type: 'sorted', idx: [i] };
+        }
+    },
+    comb: {
+        name: "Comb Sort",
+        tags: ["Unstable", "O(n²/2^p)", "Improved Bubble"],
+        avgComplexity: "O(n²/2^p)",
+        bestComplexity: "O(n log n)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(1)",
+        stable: false,
+        inPlace: true,
+        gen: function*(arr) {
+            let gap = arr.length;
+            let shrink = 1.3;
+            let sorted = false;
+            while (!sorted) {
+                gap = Math.floor(gap / shrink);
+                if (gap <= 1) { gap = 1; sorted = true; } else sorted = false;
+                yield { type: 'msg', msg: `Gap: ${gap}` };
+                
+                for (let i = 0; i + gap < arr.length; i++) {
+                    yield { type: 'cmp', idx: [i, i+gap], msg: `Comparing with gap ${gap}` };
+                    if (arr[i] > arr[i+gap]) {
+                        yield { type: 'swap', idx: [i, i+gap] };
+                        [arr[i], arr[i+gap]] = [arr[i+gap], arr[i]];
+                        sorted = false;
+                    }
+                }
+            }
+            for(let i=0; i<arr.length; i++) yield { type: 'sorted', idx: [i] };
+        }
+    },
+    radix: {
+        name: "Radix Sort (LSD)",
+        tags: ["Stable", "O(nk)", "Non-Comparative"],
+        avgComplexity: "O(nk)",
+        bestComplexity: "O(nk)",
+        worstComplexity: "O(nk)",
+        spaceComplexity: "O(n+k)",
+        stable: true,
+        inPlace: false,
+        gen: function*(arr) {
+            let max = Math.max(...arr);
+            let digitPlace = 1;
+            while (Math.floor(max / digitPlace) > 0) {
+                yield* countSort(arr, digitPlace);
+                digitPlace *= 10;
+            }
+            for (let i = 0; i < arr.length; i++) yield { type: 'sorted', idx: [i] };
+
+            function* countSort(arr, exp) {
+                let n = arr.length;
+                let output = new Array(n).fill(0);
+                let count = new Array(10).fill(0);
+
+                for (let i = 0; i < n; i++) {
+                    yield { type: 'cmp', idx: [i], msg: `Counting digit at place ${exp}` };
+                    let idx = Math.floor(arr[i] / exp) % 10;
+                    count[idx]++;
+                }
+                for (let i = 1; i < 10; i++) count[i] += count[i - 1];
+
+                for (let i = n - 1; i >= 0; i--) {
+                    let idx = Math.floor(arr[i] / exp) % 10;
+                    output[count[idx] - 1] = arr[i];
+                    count[idx]--;
+                }
+
+                for (let i = 0; i < n; i++) {
+                    arr[i] = output[i];
+                    yield { type: 'write', idx: [i], val: arr[i], msg: `Rebuilding from buckets` };
+                }
+            }
+        }
+    },
+    counting: {
+        name: "Counting Sort",
+        tags: ["Stable", "O(n+k)", "Integer Only"],
+        avgComplexity: "O(n+k)",
+        bestComplexity: "O(n+k)",
+        worstComplexity: "O(n+k)",
+        spaceComplexity: "O(k)",
+        stable: true,
+        inPlace: false,
+        gen: function*(arr) {
+            let max = Math.max(...arr);
+            let min = Math.min(...arr);
+            let range = max - min + 1;
+            let count = new Array(range).fill(0);
+            let output = new Array(arr.length).fill(0);
+
+            // Count occurrences
+            for (let i = 0; i < arr.length; i++) {
+                yield { type: 'cmp', idx: [i], msg: `Counting element ${arr[i]}` };
+                count[arr[i] - min]++;
+            }
+
+            // Cumulative count
+            for (let i = 1; i < range; i++) {
+                count[i] += count[i - 1];
+            }
+
+            // Build output
+            for (let i = arr.length - 1; i >= 0; i--) {
+                output[count[arr[i] - min] - 1] = arr[i];
+                count[arr[i] - min]--;
+            }
+
+            // Copy back
+            for (let i = 0; i < arr.length; i++) {
+                arr[i] = output[i];
+                yield { type: 'write', idx: [i], val: arr[i], msg: `Placing element in sorted position` };
+            }
+            for (let i = 0; i < arr.length; i++) yield { type: 'sorted', idx: [i] };
+        }
+    },
+    tim: {
+        name: "Tim Sort",
+        tags: ["Stable", "O(n log n)", "Hybrid"],
+        avgComplexity: "O(n log n)",
+        bestComplexity: "O(n)",
+        worstComplexity: "O(n log n)",
+        spaceComplexity: "O(n)",
+        stable: true,
+        inPlace: false,
+        gen: function*(arr) {
+            const RUN = 32;
+            const n = arr.length;
+            
+            // Sort individual runs using insertion sort
+            for (let i = 0; i < n; i += RUN) {
+                yield* insertionSortRun(arr, i, Math.min(i + RUN - 1, n - 1));
+            }
+            
+            // Merge runs
+            for (let size = RUN; size < n; size = 2 * size) {
+                for (let left = 0; left < n; left += 2 * size) {
+                    let mid = left + size - 1;
+                    let right = Math.min(left + 2 * size - 1, n - 1);
+                    if (mid < right) {
+                        yield* mergeRuns(arr, left, mid, right);
+                    }
+                }
+            }
+            for (let i = 0; i < n; i++) yield { type: 'sorted', idx: [i] };
+
+            function* insertionSortRun(arr, left, right) {
+                for (let i = left + 1; i <= right; i++) {
+                    let key = arr[i];
+                    let j = i - 1;
+                    yield { type: 'cmp', idx: [i], msg: `TimSort: Insertion on run` };
+                    while (j >= left && arr[j] > key) {
+                        yield { type: 'cmp', idx: [j] };
+                        arr[j + 1] = arr[j];
+                        yield { type: 'write', idx: [j + 1], val: arr[j] };
+                        j--;
+                    }
+                    arr[j + 1] = key;
+                    yield { type: 'write', idx: [j + 1], val: key };
+                }
+            }
+
+            function* mergeRuns(arr, l, m, r) {
+                let L = arr.slice(l, m + 1);
+                let R = arr.slice(m + 1, r + 1);
+                let i = 0, j = 0, k = l;
+                
+                while (i < L.length && j < R.length) {
+                    yield { type: 'cmp', idx: [l + i, m + 1 + j], msg: `TimSort: Merging runs` };
+                    if (L[i] <= R[j]) {
+                        arr[k] = L[i];
+                        yield { type: 'write', idx: [k], val: L[i] };
+                        i++;
+                    } else {
+                        arr[k] = R[j];
+                        yield { type: 'write', idx: [k], val: R[j] };
+                        j++;
+                    }
+                    k++;
+                }
+                while (i < L.length) {
+                    arr[k] = L[i];
+                    yield { type: 'write', idx: [k], val: L[i] };
+                    i++; k++;
+                }
+                while (j < R.length) {
+                    arr[k] = R[j];
+                    yield { type: 'write', idx: [k], val: R[j] };
+                    j++; k++;
+                }
+            }
+        }
+    },
+    bucket: {
+        name: "Bucket Sort",
+        tags: ["Stable", "O(n+k)", "Distribution"],
+        avgComplexity: "O(n+k)",
+        bestComplexity: "O(n+k)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(n)",
+        stable: true,
+        inPlace: false,
+        gen: function*(arr) {
+            let n = arr.length;
+            if (n <= 0) return;
+            
+            let max = Math.max(...arr);
+            let min = Math.min(...arr);
+            let range = max - min + 1;
+            let bucketCount = Math.min(n, 10);
+            let buckets = Array.from({length: bucketCount}, () => []);
+            
+            // Distribute into buckets
+            for (let i = 0; i < n; i++) {
+                yield { type: 'cmp', idx: [i], msg: `Distributing to bucket` };
+                let idx = Math.floor(((arr[i] - min) / range) * (bucketCount - 1));
+                buckets[idx].push(arr[i]);
+            }
+            
+            // Sort individual buckets and concatenate
+            let k = 0;
+            for (let i = 0; i < bucketCount; i++) {
+                buckets[i].sort((a, b) => a - b);
+                for (let j = 0; j < buckets[i].length; j++) {
+                    arr[k] = buckets[i][j];
+                    yield { type: 'write', idx: [k], val: buckets[i][j], msg: `Bucket ${i} → position ${k}` };
+                    k++;
+                }
+            }
+            for (let i = 0; i < n; i++) yield { type: 'sorted', idx: [i] };
+        }
+    },
+    oddeven: {
+        name: "Odd-Even Sort",
+        tags: ["Stable", "O(n²)", "Parallel"],
+        avgComplexity: "O(n²)",
+        bestComplexity: "O(n)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(1)",
+        stable: true,
+        inPlace: true,
+        gen: function*(arr) {
+            let n = arr.length;
+            let sorted = false;
+            
+            while (!sorted) {
+                sorted = true;
+                
+                // Odd phase
+                for (let i = 1; i < n - 1; i += 2) {
+                    yield { type: 'cmp', idx: [i, i+1], msg: `Odd phase: comparing ${i} and ${i+1}` };
+                    if (arr[i] > arr[i + 1]) {
+                        yield { type: 'swap', idx: [i, i+1] };
+                        [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+                        sorted = false;
+                    }
+                }
+                
+                // Even phase
+                for (let i = 0; i < n - 1; i += 2) {
+                    yield { type: 'cmp', idx: [i, i+1], msg: `Even phase: comparing ${i} and ${i+1}` };
+                    if (arr[i] > arr[i + 1]) {
+                        yield { type: 'swap', idx: [i, i+1] };
+                        [arr[i], arr[i + 1]] = [arr[i + 1], arr[i]];
+                        sorted = false;
+                    }
+                }
+            }
+            for (let i = 0; i < n; i++) yield { type: 'sorted', idx: [i] };
+        }
+    },
+    pancake: {
+        name: "Pancake Sort",
+        tags: ["Unstable", "O(n²)", "Flipping"],
+        avgComplexity: "O(n²)",
+        bestComplexity: "O(n²)",
+        worstComplexity: "O(n²)",
+        spaceComplexity: "O(1)",
+        stable: false,
+        inPlace: true,
+        gen: function*(arr) {
+            let n = arr.length;
+            
+            for (let currSize = n; currSize > 1; currSize--) {
+                // Find index of maximum element
+                let maxIdx = 0;
+                for (let i = 1; i < currSize; i++) {
+                    yield { type: 'cmp', idx: [i, maxIdx], msg: `Finding max in first ${currSize} elements` };
+                    if (arr[i] > arr[maxIdx]) maxIdx = i;
+                }
+                
+                if (maxIdx !== currSize - 1) {
+                    // Flip to bring max to front
+                    if (maxIdx > 0) {
+                        yield* flip(arr, maxIdx);
+                    }
+                    // Flip to move max to correct position
+                    yield* flip(arr, currSize - 1);
+                }
+                yield { type: 'sorted', idx: [currSize - 1] };
+            }
+            yield { type: 'sorted', idx: [0] };
+
+            function* flip(arr, k) {
+                let left = 0, right = k;
+                while (left < right) {
+                    yield { type: 'swap', idx: [left, right], msg: `Flipping at position ${k}` };
+                    [arr[left], arr[right]] = [arr[right], arr[left]];
+                    left++;
+                    right--;
+                }
+            }
+        }
+    }
+};
+
+/**
+ * -----------------------------------------------------------------------
+ * TEXTBOOK CONTENT
+ * -----------------------------------------------------------------------
+ */
+const TEXTBOOK = [
+    {
+        title: "Introduction",
+        content: `
+            <h1>The "Fruit Fly" of Computing</h1>
+            <p>When people first encounter sorting algorithms, they look deceptively simple—just put things in order. But beneath that surface lies one of the deepest, most formative areas in the entire history of computer science. Sorting isn't just a practical problem; it's a <em>lens</em> through which we understand the fundamental limits and possibilities of computation itself.</p>
+            
+            <div class="callout">
+                <span class="callout-title"><i class="fas fa-lightbulb"></i> Why "Fruit Fly"?</span>
+                <p>Just as biologists study <em>Drosophila melanogaster</em> (fruit flies) to understand genetics because they're simple enough to observe yet complex enough to reveal deep truths, computer scientists study sorting to understand computation. Every major advance in algorithm theory—from divide-and-conquer to cache optimization—was first tested and refined on sorting problems.</p>
+            </div>
+            
+            <h2>Why Sorting Matters</h2>
+            <p>Consider what happens when you search the internet. Google processes billions of queries daily, and at the heart of their systems are sophisticated sorting algorithms. When you open a spreadsheet, sort your photos by date, or even when your phone suggests contacts, sorting algorithms are silently at work.</p>
+            
+            <p>From the 1940s onward, researchers realized a profound truth: <strong>if you could speed up sorting, you could speed up everything built on top of it.</strong> This includes databases, operating systems, compilers, scientific simulations, machine learning pipelines, and virtually every piece of modern software.</p>
+            
+            <h2>What You'll Learn</h2>
+            <p>This interactive laboratory will take you on a journey through seven decades of algorithmic innovation. You'll see firsthand:</p>
+            <ul>
+                <li>Why some algorithms are mathematically optimal yet perform poorly in practice</li>
+                <li>How physical constraints of hardware shape theoretical ideals</li>
+                <li>The beautiful trade-offs between time, space, and stability</li>
+                <li>Why "cheating" (non-comparison sorts) can break theoretical limits</li>
+            </ul>
+            
+            <div class="insight-box">
+                <span class="callout-title"><i class="fas fa-rocket"></i> Getting Started</span>
+                <p>Use <strong>Race Mode</strong> to give all algorithms identical input data for fair comparison. Watch the <strong>Leaderboard</strong> to see objective performance metrics in real-time. Click on any algorithm card to focus on its specific behavior.</p>
+            </div>
+        `
+    },
+    {
+        title: "Foundations",
+        content: `
+            <h1>Simple Algorithms, Hidden Depth</h1>
+            <p>The first algorithms students encounter—Bubble Sort, Insertion Sort, and Selection Sort—are often dismissed as "inefficient" and quickly forgotten. This is a mistake. These algorithms reveal fundamental truths about the nature of sorting that remain relevant even when working with modern, high-performance systems.</p>
+            
+            <h2>Bubble Sort: The Humble Teacher</h2>
+            <p>Bubble Sort works by repeatedly stepping through the list, comparing adjacent elements, and swapping them if they're in the wrong order. The largest unsorted element "bubbles up" to its correct position in each pass.</p>
+            
+            <div class="code-block">
+<span class="keyword">for</span> i <span class="keyword">from</span> 0 <span class="keyword">to</span> n-1:
+    <span class="keyword">for</span> j <span class="keyword">from</span> 0 <span class="keyword">to</span> n-i-1:
+        <span class="keyword">if</span> arr[j] > arr[j+1]:
+            <span class="comment">// Swap adjacent elements</span>
+            swap(arr[j], arr[j+1])
+            </div>
+            
+            <p>While Bubble Sort is O(n²)—meaning doubling the input quadruples the work—it teaches critical concepts:</p>
+            <ul>
+                <li><strong>Stability:</strong> Equal elements maintain their original order</li>
+                <li><strong>In-place:</strong> No extra memory needed (O(1) space)</li>
+                <li><strong>Adaptive potential:</strong> Can detect when array is sorted</li>
+            </ul>
+            
+            <h2>Insertion Sort: How Humans Think</h2>
+            <p>Imagine sorting a hand of playing cards. You pick up cards one at a time and insert each into its correct position among the cards you've already sorted. This is exactly how Insertion Sort works.</p>
+            
+            <p>Insertion Sort has a hidden superpower: <strong>adaptivity</strong>. On nearly-sorted data, it approaches O(n) performance—better than Quick Sort or Merge Sort! This makes it ideal for:</p>
+            <ul>
+                <li>Small datasets (under ~50 elements)</li>
+                <li>Data that's already mostly sorted</li>
+                <li>Online sorting (sorting as data arrives)</li>
+            </ul>
+            
+            <div class="callout">
+                <span class="callout-title"><i class="fas fa-star"></i> Real-World Application</span>
+                <p>Tim Sort—Python's built-in sort and Java's Arrays.sort()—uses Insertion Sort for small runs before merging them. This hybrid approach captures the best of both worlds.</p>
+            </div>
+            
+            <h2>Selection Sort: Minimal Swaps</h2>
+            <p>Selection Sort finds the minimum element and moves it to the front, then repeats for the remaining elements. Its key property: it performs only O(n) swaps (vs. O(n²) for Bubble Sort), making it useful when swapping is expensive (like moving physical objects or writing to slow storage).</p>
+            
+            <table class="comparison-table">
+                <tr><th>Algorithm</th><th>Best Case</th><th>Average</th><th>Worst Case</th><th>Stable?</th></tr>
+                <tr><td>Bubble Sort</td><td class="good">O(n)</td><td class="bad">O(n²)</td><td class="bad">O(n²)</td><td>Yes</td></tr>
+                <tr><td>Insertion Sort</td><td class="good">O(n)</td><td class="bad">O(n²)</td><td class="bad">O(n²)</td><td>Yes</td></tr>
+                <tr><td>Selection Sort</td><td class="bad">O(n²)</td><td class="bad">O(n²)</td><td class="bad">O(n²)</td><td>No</td></tr>
+            </table>
+        `
+    },
+    {
+        title: "Complexity",
+        content: `
+            <h1>The Complexity Barrier</h1>
+            <p>In the 1960s, computer scientists asked a profound question: <em>How fast can sorting possibly be?</em> The answer reveals something deep about the nature of information itself.</p>
+            
+            <h2>The Lower Bound Proof</h2>
+            <p>Consider an array of n distinct elements. There are n! (n factorial) possible permutations. A comparison-based sorting algorithm must distinguish between all of these possibilities using only yes/no questions of the form "Is element A greater than element B?"</p>
+            
+            <div class="code-block">
+<span class="comment">// With n = 3 elements, there are 3! = 6 permutations:</span>
+[1,2,3], [1,3,2], [2,1,3], [2,3,1], [3,1,2], [3,2,1]
+
+<span class="comment">// Each comparison splits possibilities in half at best</span>
+<span class="comment">// Need at least log₂(n!) comparisons</span>
+
+<span class="keyword">Using Stirling's approximation:</span>
+log₂(n!) ≈ n·log₂(n) - n·log₂(e)
+        <span class="string">≈ n·log₂(n)</span>   ← <span class="keyword">This is O(n log n)</span>
+            </div>
+            
+            <div class="warning-box">
+                <span class="callout-title"><i class="fas fa-exclamation-triangle"></i> The Impassable Wall</span>
+                <p>No comparison-based sorting algorithm can have a time complexity better than <strong>O(n log n)</strong> in the average case. This isn't a limitation of our cleverness—it's a mathematical certainty derived from information theory.</p>
+            </div>
+            
+            <h2>Why This Matters</h2>
+            <p>This proof was a watershed moment in computer science. It showed that algorithms aren't just about clever tricks—they're constrained by fundamental mathematical laws, just like physics constrains perpetual motion machines.</p>
+            
+            <p>The proof also revealed something wonderful: <strong>algorithms that achieve O(n log n) are optimal.</strong> Merge Sort, Heap Sort, and (on average) Quick Sort all hit this theoretical limit. They cannot be fundamentally improved upon.</p>
+            
+            <h2>The Escape Hatches</h2>
+            <p>The lower bound applies only to <em>comparison-based</em> sorts. If we know something special about our data (like all values being small integers), we can "cheat" and use non-comparison methods:</p>
+            <ul>
+                <li><strong>Counting Sort:</strong> O(n + k) where k is the range of values</li>
+                <li><strong>Radix Sort:</strong> O(nk) where k is the number of digits</li>
+                <li><strong>Bucket Sort:</strong> O(n) average case for uniform distributions</li>
+            </ul>
+            
+            <div class="insight-box">
+                <span class="callout-title"><i class="fas fa-microscope"></i> Observe in Action</span>
+                <p>Watch Radix Sort in the visualizer—notice how it never compares two elements directly! It simply distributes elements into buckets based on their digits, achieving linear time.</p>
+            </div>
+        `
+    },
+    {
+        title: "Divide & Conquer",
+        content: `
+            <h1>The Golden Age (1940s-60s)</h1>
+            <p>To break the O(n²) barrier of simple sorts, pioneers like John von Neumann and Tony Hoare applied a powerful paradigm: <strong>Divide and Conquer</strong>. Split the problem in half, solve each half, and combine the solutions.</p>
+            
+            <h2>Merge Sort (1945)</h2>
+            <p>Invented by John von Neumann for the EDVAC computer, Merge Sort was one of the first algorithms designed specifically for electronic computers. Its elegance lies in its simplicity and reliability.</p>
+            
+            <div class="code-block">
+<span class="keyword">function</span> mergeSort(arr):
+    <span class="keyword">if</span> arr.length <= 1: <span class="keyword">return</span> arr
+    
+    mid = arr.length / 2
+    left = mergeSort(arr[0..mid])    <span class="comment">// Recursive call</span>
+    right = mergeSort(arr[mid..end]) <span class="comment">// Recursive call</span>
+    
+    <span class="keyword">return</span> merge(left, right)         <span class="comment">// Combine sorted halves</span>
+            </div>
+            
+            <p><strong>Key properties:</strong></p>
+            <ul>
+                <li><strong>Guaranteed O(n log n)</strong> — no worst-case degradation</li>
+                <li><strong>Stable</strong> — preserves order of equal elements</li>
+                <li><strong>Predictable</strong> — same performance regardless of input</li>
+            </ul>
+            
+            <p>The only downside: Merge Sort requires O(n) auxiliary space for the merge operation. In an era when memory was precious, this was significant.</p>
+            
+            <h2>Quick Sort (1959)</h2>
+            <p>Tony Hoare invented Quick Sort while working on machine translation in Moscow. He called it "the algorithm I'm most proud of." Quick Sort works by choosing a "pivot" element and partitioning the array: elements smaller than the pivot go left, larger go right.</p>
+            
+            <div class="code-block">
+<span class="keyword">function</span> quickSort(arr, low, high):
+    <span class="keyword">if</span> low < high:
+        pivot = partition(arr, low, high)
+        quickSort(arr, low, pivot - 1)   <span class="comment">// Sort left</span>
+        quickSort(arr, pivot + 1, high)  <span class="comment">// Sort right</span>
+
+<span class="keyword">function</span> partition(arr, low, high):
+    pivot = arr[high]                    <span class="comment">// Choose rightmost as pivot</span>
+    i = low - 1
+    <span class="keyword">for</span> j from low to high - 1:
+        <span class="keyword">if</span> arr[j] < pivot:
+            i++
+            swap(arr[i], arr[j])
+    swap(arr[i + 1], arr[high])
+    <span class="keyword">return</span> i + 1
+            </div>
+            
+            <p>Quick Sort has a paradox: its worst case is O(n²) (when the pivot is always the smallest or largest element), yet it typically outperforms Merge Sort. Why?</p>
+            
+            <div class="callout">
+                <span class="callout-title"><i class="fas fa-bolt"></i> The Secret of Speed</span>
+                <p>Quick Sort operates <strong>in-place</strong> (O(log n) stack space) and has excellent <strong>cache locality</strong>—it accesses memory sequentially, keeping the CPU's cache hot. On modern hardware, memory access patterns matter more than theoretical operation counts.</p>
+            </div>
+            
+            <h2>Heap Sort (1964)</h2>
+            <p>J.W.J. Williams invented Heap Sort to get the best of both worlds: O(n log n) guaranteed performance with O(1) extra space. It works by building a "max heap" data structure and repeatedly extracting the maximum.</p>
+            
+            <p>On paper, Heap Sort looks perfect. In practice, it's often slower than Quick Sort due to its random memory access pattern (jumping between parent and child nodes), which causes cache misses.</p>
+        `
+    },
+    {
+        title: "Hardware",
+        content: `
+            <h1>When Math Meets Physics</h1>
+            <p>The elegant world of algorithmic complexity collides with the messy reality of physical hardware. Understanding this collision is essential for writing fast code in the real world.</p>
+            
+            <h2>The Memory Hierarchy</h2>
+            <p>Modern computers have a hierarchy of increasingly fast (but smaller) memory:</p>
+            
+            <table class="comparison-table">
+                <tr><th>Level</th><th>Size</th><th>Latency</th><th>Speed vs RAM</th></tr>
+                <tr><td>CPU Registers</td><td>~1 KB</td><td>~1 cycle</td><td class="good">100x faster</td></tr>
+                <tr><td>L1 Cache</td><td>~64 KB</td><td>~4 cycles</td><td class="good">25x faster</td></tr>
+                <tr><td>L2 Cache</td><td>~256 KB</td><td>~12 cycles</td><td class="good">8x faster</td></tr>
+                <tr><td>L3 Cache</td><td>~8 MB</td><td>~40 cycles</td><td class="neutral">2.5x faster</td></tr>
+                <tr><td>RAM</td><td>~16 GB</td><td>~100 cycles</td><td>Baseline</td></tr>
+                <tr><td>SSD</td><td>~1 TB</td><td>~100,000 cycles</td><td class="bad">1000x slower</td></tr>
+            </table>
+            
+            <h2>The Heap Sort Paradox</h2>
+            <p>Consider two algorithms: Quick Sort and Heap Sort. Both are O(n log n). Heap Sort is even "better" on paper—guaranteed performance with O(1) space. Yet Quick Sort typically wins. The culprit? <strong>Cache misses.</strong></p>
+            
+            <div class="code-block">
+<span class="comment">// Quick Sort: Sequential access pattern</span>
+for j from low to high:    <span class="comment">← CPU can prefetch this!</span>
+    if arr[j] < pivot: ...
+
+<span class="comment">// Heap Sort: Random access pattern</span>
+left_child = 2*i + 1       <span class="comment">← Jump to distant memory</span>
+right_child = 2*i + 2      <span class="comment">← Another jump</span>
+<span class="comment">// Cache line probably evicted before we return</span>
+            </div>
+            
+            <p>When Quick Sort scans through an array, the CPU's <em>prefetcher</em> recognizes the pattern and loads upcoming data into cache before it's needed. Heap Sort's jumping pattern defeats this optimization, causing the CPU to wait for data from slow RAM.</p>
+            
+            <div class="insight-box">
+                <span class="callout-title"><i class="fas fa-chart-line"></i> Watch the Metrics</span>
+                <p>In the visualizer, compare the <strong>MEM</strong> (memory access) counts between Heap Sort and Quick Sort. Even with similar comparison counts, the access patterns differ dramatically in real-world impact.</p>
+            </div>
+            
+            <h2>Modern Optimizations</h2>
+            <p>Armed with this knowledge, modern implementations use sophisticated techniques:</p>
+            <ul>
+                <li><strong>Block merging:</strong> Process data in cache-sized chunks</li>
+                <li><strong>Branch prediction:</strong> Avoid unpredictable if-statements</li>
+                <li><strong>SIMD:</strong> Compare multiple elements simultaneously using vector instructions</li>
+                <li><strong>Hybrid approaches:</strong> Switch to Insertion Sort for small subarrays (cache-friendly)</li>
+            </ul>
+        `
+    },
+    {
+        title: "Hybrids",
+        content: `
+            <h1>The Best of All Worlds</h1>
+            <p>After decades of research, engineers realized that no single algorithm is best in all situations. The solution? <strong>Hybrid algorithms</strong> that combine multiple techniques, switching between them based on the situation.</p>
+            
+            <h2>Tim Sort (2002)</h2>
+            <p>Invented by Tim Peters for Python, Tim Sort is now used in Python, Java, Android, and Swift. It's specifically designed for real-world data, which is often partially sorted.</p>
+            
+            <p><strong>Key Insight:</strong> Real data contains "runs"—sequences that are already sorted. Tim Sort identifies these runs and merges them intelligently.</p>
+            
+            <div class="code-block">
+<span class="keyword">TimSort Algorithm:</span>
+
+1. <span class="string">Identify natural runs</span> (already sorted sequences)
+2. <span class="string">Extend short runs</span> using Insertion Sort (minimum size: 32-64)
+3. <span class="string">Merge runs</span> using a sophisticated strategy:
+   - Maintain a stack of runs
+   - Merge runs of similar size (galloping mode)
+   - Use "galloping" to skip large chunks during merge
+            </div>
+            
+            <p><strong>Why it works:</strong></p>
+            <ul>
+                <li>On random data: O(n log n), like Merge Sort</li>
+                <li>On sorted data: O(n), just one scan!</li>
+                <li>On partially sorted: Exploits existing order</li>
+                <li>Stable: Critical for database operations</li>
+            </ul>
+            
+            <h2>Introsort (1997)</h2>
+            <p>David Musser designed Introsort to get Quick Sort's speed while avoiding its O(n²) worst case. It starts with Quick Sort but switches to Heap Sort if recursion goes too deep.</p>
+            
+            <div class="code-block">
+<span class="keyword">function</span> introsort(arr, maxDepth):
+    <span class="keyword">if</span> arr.length < 16:
+        insertionSort(arr)           <span class="comment">// Small arrays</span>
+    <span class="keyword">else if</span> maxDepth == 0:
+        heapSort(arr)                <span class="comment">// Recursion too deep</span>
+    <span class="keyword">else</span>:
+        pivot = partition(arr)
+        introsort(left, maxDepth - 1)
+        introsort(right, maxDepth - 1)
+            </div>
+            
+            <p>This is the algorithm behind C++'s <code>std::sort</code> and many other standard library implementations.</p>
+            
+            <div class="callout">
+                <span class="callout-title"><i class="fas fa-code"></i> In Your Code</span>
+                <p>When you call <code>sort()</code> in most languages, you're using a sophisticated hybrid. Python uses Tim Sort. C++ uses Introsort. JavaScript engines use various optimized hybrids. You benefit from decades of research with a single function call!</p>
+            </div>
+        `
+    },
+    {
+        title: "Non-Comparison",
+        content: `
+            <h1>Breaking the Rules</h1>
+            <p>Remember the O(n log n) lower bound? It only applies to <em>comparison-based</em> sorting. If we can exploit special properties of our data, we can sort in linear time.</p>
+            
+            <h2>Counting Sort</h2>
+            <p>If all values are integers in a known range [0, k], we can count occurrences and reconstruct the sorted array:</p>
+            
+            <div class="code-block">
+<span class="keyword">function</span> countingSort(arr, k):
+    count = <span class="keyword">new</span> Array(k + 1).fill(0)
+    
+    <span class="comment">// Count occurrences</span>
+    <span class="keyword">for each</span> element in arr:
+        count[element]++
+    
+    <span class="comment">// Reconstruct sorted array</span>
+    index = 0
+    <span class="keyword">for</span> value from 0 to k:
+        <span class="keyword">while</span> count[value] > 0:
+            arr[index++] = value
+            count[value]--
+            </div>
+            
+            <p><strong>Time: O(n + k)</strong> — Linear when k is O(n)!</p>
+            <p><strong>Space: O(k)</strong> — Need array for counting</p>
+            
+            <h2>Radix Sort</h2>
+            <p>Radix Sort extends counting sort to handle larger numbers by sorting digit-by-digit. It's the secret behind high-performance integer sorting.</p>
+            
+            <p><strong>LSD (Least Significant Digit) Radix Sort:</strong></p>
+            <div class="code-block">
+<span class="comment">// Sort these numbers: 170, 45, 75, 90, 802, 24, 2, 66</span>
+
+<span class="string">Pass 1 (ones place):</span>  17<span class="keyword">0</span>, 9<span class="keyword">0</span>, 80<span class="keyword">2</span>, <span class="keyword">2</span>, 2<span class="keyword">4</span>, 4<span class="keyword">5</span>, 7<span class="keyword">5</span>, 6<span class="keyword">6</span>
+<span class="string">Pass 2 (tens place):</span>  8<span class="keyword">0</span>2, <span class="keyword">0</span>2, <span class="keyword">2</span>4, <span class="keyword">4</span>5, <span class="keyword">6</span>6, 1<span class="keyword">7</span>0, <span class="keyword">7</span>5, <span class="keyword">9</span>0
+<span class="string">Pass 3 (hundreds):</span>   <span class="keyword">0</span>02, <span class="keyword">0</span>24, <span class="keyword">0</span>45, <span class="keyword">0</span>66, <span class="keyword">0</span>75, <span class="keyword">0</span>90, <span class="keyword">1</span>70, <span class="keyword">8</span>02
+
+<span class="comment">// Result: 2, 24, 45, 66, 75, 90, 170, 802</span>
+            </div>
+            
+            <h2>Bucket Sort</h2>
+            <p>When values are uniformly distributed, we can divide the range into buckets, sort each bucket (with any algorithm), and concatenate:</p>
+            
+            <div class="insight-box">
+                <span class="callout-title"><i class="fas fa-lightbulb"></i> When to Use</span>
+                <p><strong>Counting Sort:</strong> Small integers (like ages, scores 0-100)<br>
+                <strong>Radix Sort:</strong> Larger integers, fixed-length strings<br>
+                <strong>Bucket Sort:</strong> Floating-point numbers, uniform distributions</p>
+            </div>
+            
+            <div class="warning-box">
+                <span class="callout-title"><i class="fas fa-exclamation-triangle"></i> The Catch</span>
+                <p>These algorithms aren't always faster in practice. Radix Sort's constant factors are higher than Quick Sort's, so it only wins for large arrays of integers with many digits. Always benchmark!</p>
+            </div>
+        `
+    },
+    {
+        title: "Exotic",
+        content: `
+            <h1>Curious & Unusual Sorts</h1>
+            <p>Beyond the "serious" algorithms, there's a menagerie of unusual sorting methods—some practical in niche cases, others purely educational or whimsical.</p>
+            
+            <h2>Shell Sort (1959)</h2>
+            <p>Donald Shell noticed that Insertion Sort is fast on nearly-sorted data. His idea: first sort elements far apart, then gradually reduce the gap. By the time we reach gap=1 (standard Insertion Sort), the array is nearly sorted.</p>
+            
+            <div class="code-block">
+<span class="comment">// Gap sequence: n/2, n/4, n/8, ..., 1</span>
+<span class="keyword">for</span> gap = n/2; gap > 0; gap /= 2:
+    <span class="keyword">for</span> i from gap to n:
+        <span class="comment">// Insertion sort with step size = gap</span>
+        temp = arr[i]
+        j = i
+        <span class="keyword">while</span> j >= gap <span class="keyword">and</span> arr[j - gap] > temp:
+            arr[j] = arr[j - gap]
+            j -= gap
+        arr[j] = temp
+            </div>
+            
+            <p>The complexity depends on the gap sequence—a fascinating open problem! The best known sequences achieve O(n log² n).</p>
+            
+            <h2>Gnome Sort</h2>
+            <p>Also called "Stupid Sort," Gnome Sort is what you'd get if you explained Insertion Sort to someone who wasn't quite paying attention. It's remarkably simple:</p>
+            
+            <div class="code-block">
+position = 0
+<span class="keyword">while</span> position < n:
+    <span class="keyword">if</span> position == 0 <span class="keyword">or</span> arr[position] >= arr[position - 1]:
+        position++   <span class="comment">// Move forward</span>
+    <span class="keyword">else</span>:
+        swap(arr[position], arr[position - 1])
+        position--   <span class="comment">// Step back and check again</span>
+            </div>
+            
+            <h2>Cocktail Shaker Sort</h2>
+            <p>A bidirectional Bubble Sort. Instead of always bubbling in one direction, it alternates—like a cocktail shaker. This helps move "turtles" (small elements at the end) faster.</p>
+            
+            <h2>Pancake Sort</h2>
+            <p>The only operation allowed is flipping a prefix of the array (like flipping pancakes). This was a theoretical curiosity until Bill Gates (yes, that Bill Gates) co-authored a paper on it in 1979, proving bounds on the minimum flips needed.</p>
+            
+            <h2>Odd-Even Sort</h2>
+            <p>A parallel-friendly sort that alternates between comparing odd-indexed pairs and even-indexed pairs. On a parallel processor, all odd comparisons (or all even) can happen simultaneously!</p>
+            
+            <div class="callout">
+                <span class="callout-title"><i class="fas fa-flask"></i> Observe the Patterns</span>
+                <p>Watch these algorithms in the visualizer. Notice how Cocktail Shaker handles both ends simultaneously. See how Shell Sort creates partial order before the final pass. Each algorithm has a distinct visual "personality."</p>
+            </div>
+        `
+    },
+    {
+        title: "The Future",
+        content: `
+            <h1>Beyond Classical Computing</h1>
+            <p>Sorting continues to evolve. Modern research explores parallel algorithms, cache-oblivious designs, and even quantum sorting. The fundamentals you've learned remain relevant, but new frontiers await.</p>
+            
+            <h2>GPU Sorting</h2>
+            <p>Graphics cards have thousands of cores that can work in parallel. Algorithms like Bitonic Sort and Radix Sort adapt beautifully to this paradigm, achieving massive speedups for large datasets.</p>
+            
+            <div class="code-block">
+<span class="comment">// Bitonic Sort: Perfect for parallel execution</span>
+<span class="comment">// A "bitonic sequence" increases then decreases (or vice versa)</span>
+<span class="comment">// Can always be split into two smaller bitonic sequences</span>
+
+<span class="keyword">Parallel steps:</span>
+1. Build bitonic sequences of length 2, 4, 8, ...
+2. Each step: <span class="string">all comparisons independent!</span>
+3. Total: O(log² n) parallel steps
+            </div>
+            
+            <h2>Cache-Oblivious Algorithms</h2>
+            <p>Rather than tuning for specific cache sizes, cache-oblivious algorithms perform well on any memory hierarchy—without knowing the cache sizes at all! Funnel Sort achieves O(n/B · log_{M/B}(n/B)) I/Os, which is optimal.</p>
+            
+            <h2>Learned Index Sorting</h2>
+            <p>A radical 2020s idea: what if we use machine learning to predict where each element belongs? A neural network learns the distribution of your data and directly predicts sorted positions. Early results show 3x speedups on some datasets!</p>
+            
+            <h2>Quantum Sorting</h2>
+            <p>Quantum computers offer tantalizing possibilities. Grover's algorithm can find the minimum in O(√n) time. However, the I/O bottleneck means quantum speedups for sorting are more modest than for searching—an active research area.</p>
+            
+            <div class="insight-box">
+                <span class="callout-title"><i class="fas fa-graduation-cap"></i> What You've Learned</span>
+                <p>You've journeyed from simple swaps to the frontiers of computing. The key insight: <strong>algorithms don't exist in a vacuum.</strong> The "best" sort depends on your data, hardware, constraints, and requirements. Understanding the trade-offs lets you make informed choices.</p>
+            </div>
+            
+            <h2>Keep Exploring</h2>
+            <p>This visualizer is your laboratory. Experiment with different array sizes and see how scaling affects each algorithm. Try Race Mode with various data patterns. The patterns you observe here reflect the same principles that guide the world's largest data systems.</p>
+            
+            <div class="callout">
+                <span class="callout-title"><i class="fas fa-book"></i> Further Reading</span>
+                <p><em>The Art of Computer Programming, Vol. 3</em> by Donald Knuth — the definitive reference<br>
+                <em>Introduction to Algorithms</em> by Cormen et al. — rigorous and comprehensive<br>
+                <em>Algorithms</em> by Sedgewick — practical and beautifully illustrated</p>
+            </div>
+        `
+    }
+];
+
+const TOOLTIPS = {
+    "cmp": "<strong>Comparisons (CMP)</strong>Number of times elements are compared. In comparison-based sorts, this determines theoretical complexity. High counts indicate more work.",
+    "acc": "<strong>Memory Operations (MEM)</strong>Total array reads and writes. On modern hardware with cache hierarchies, this often matters more than comparisons for actual speed.",
+    "mem": "<strong>Auxiliary Space (AUX)</strong>Extra memory required beyond the input array. O(1) means 'in-place' (constant extra space). O(n) means the algorithm needs to copy all data.",
+    "race": "<strong>Race Mode</strong>Generates one master dataset and copies it to all algorithms. This ensures a scientifically valid comparison where all sorts start with identical data.",
+    "reset": "<strong>Reset All</strong>Generates fresh random data for each algorithm independently. Useful for seeing typical behavior across different inputs.",
+    "run": "<strong>Run Simulation</strong>Starts all sorting algorithms simultaneously. Watch them race! Higher speeds may skip visual frames for performance."
+};
+
+/**
+ * -----------------------------------------------------------------------
+ * VISUALIZER COMPONENT
+ * -----------------------------------------------------------------------
+ */
+class Visualizer {
+    constructor(algoKey, initialArr) {
+        this.key = algoKey;
+        this.arr = [...initialArr];
+        this.gen = null;
+        this.done = false;
+        this.startTime = null;
+        this.endTime = null;
+        
+        this.stats = { cmp: 0, acc: 0, mem: 0 };
+        
+        this.el = document.createElement('div');
+        this.el.className = 'card';
+        
+        const algo = ALGOS[algoKey];
+        const tags = [];
+        if (algo.stable) tags.push('<span class="tag-badge stable">Stable</span>');
+        if (algo.inPlace) tags.push('<span class="tag-badge inplace">In-Place</span>');
+        
+        this.el.innerHTML = `
+            <div class="card-header">
+                <div class="card-title">
+                    ${algo.name}
+                    <span class="complexity-badge">${algo.avgComplexity}</span>
+                </div>
+                <div style="display:flex;gap:4px;">${tags.join('')}</div>
+            </div>
+            <div class="metrics-row">
+                <div class="metric cmp" data-tooltip="cmp">
+                    <span>CMP</span> <b id="cmp-${this.key}">0</b>
+                </div>
+                <div class="metric acc" data-tooltip="acc">
+                    <span>MEM</span> <b id="acc-${this.key}">0</b>
+                </div>
+                <div class="metric time">
+                    <span>TIME</span> <b id="time-${this.key}">--</b>
+                </div>
+            </div>
+            <div class="canvas" id="cvs-${this.key}"></div>
+            <div class="log-strip">
+                <div class="status">
+                    <div class="status-dot" id="dot-${this.key}"></div>
+                    <span id="log-${this.key}">Ready</span>
+                </div>
+                <span style="opacity:0.5">${algo.spaceComplexity} space</span>
+            </div>
+        `;
+        
+        this.cvs = this.el.querySelector(`#cvs-${this.key}`);
+        this.els = {
+            log: this.el.querySelector(`#log-${this.key}`),
+            cmp: this.el.querySelector(`#cmp-${this.key}`),
+            acc: this.el.querySelector(`#acc-${this.key}`),
+            time: this.el.querySelector(`#time-${this.key}`),
+            dot: this.el.querySelector(`#dot-${this.key}`)
+        };
+        
+        this.renderInitial();
+    }
+
+    renderInitial() {
+        this.cvs.innerHTML = '';
+        this.bars = this.arr.map(h => {
+            const b = document.createElement('div');
+            b.className = 'bar';
+            b.style.height = `${h}%`;
+            this.cvs.appendChild(b);
+            return b;
+        });
+    }
+
+    step() {
+        if (this.done) return;
+        if (!this.gen) {
+            this.gen = ALGOS[this.key].gen(this.arr);
+            this.els.log.textContent = 'Sorting...';
+            this.els.dot.classList.add('running');
+            this.startTime = performance.now();
+        }
+
+        const { value, done } = this.gen.next();
+        
+        if (done) {
+            this.done = true;
+            this.endTime = performance.now();
+            this.els.log.textContent = 'Complete';
+            this.els.dot.classList.remove('running');
+            this.els.dot.classList.add('complete');
+            this.bars.forEach(b => b.classList.add('sorted'));
+            this.els.time.textContent = ((this.endTime - this.startTime) / 1000).toFixed(2) + 's';
+            return;
+        }
+
+        const active = this.el.querySelectorAll('.bar.cmp, .bar.swap, .bar.write, .bar.pivot');
+        active.forEach(b => {
+            b.classList.remove('cmp', 'swap', 'write', 'pivot');
+        });
+
+        if (value.type === 'cmp') {
+            this.stats.cmp++;
+            this.stats.acc += 2;
+            value.idx.forEach(i => {
+                if (this.bars[i]) this.bars[i].classList.add('cmp');
+            });
+        }
+        else if (value.type === 'swap') {
+            this.stats.acc += 4;
+            const [i, j] = value.idx;
+            if (this.bars[i]) this.bars[i].classList.add('swap');
+            if (this.bars[j]) this.bars[j].classList.add('swap');
+            const temp = this.bars[i].style.height;
+            this.bars[i].style.height = this.bars[j].style.height;
+            this.bars[j].style.height = temp;
+            AudioEngine.play(this.arr[i], 100);
+        }
+        else if (value.type === 'write') {
+            this.stats.acc++;
+            const i = value.idx[0];
+            if (this.bars[i]) {
+                this.bars[i].classList.add('write');
+                this.bars[i].style.height = `${value.val}%`;
+            }
+            AudioEngine.play(value.val, 100);
+        }
+        else if (value.type === 'sorted') {
+            value.idx.forEach(i => {
+                if (this.bars[i]) this.bars[i].classList.add('sorted');
+            });
+        }
+        else if (value.type === 'pivot') {
+            value.idx.forEach(i => {
+                if (this.bars[i]) this.bars[i].classList.add('pivot');
+            });
+        }
+
+        this.els.cmp.textContent = this.stats.cmp.toLocaleString();
+        this.els.acc.textContent = this.stats.acc.toLocaleString();
+        if (value.msg) this.els.log.textContent = value.msg;
+    }
+}
+
+/**
+ * -----------------------------------------------------------------------
+ * APP CONTROLLER
+ * -----------------------------------------------------------------------
+ */
+const app = {
+    visualizers: [],
+    isRunning: false,
+    speed: 80,
+    size: 60,
+    currentView: 'grid',
+    raceData: null,
+    finishOrder: [],
+    
+    init() {
+        AudioEngine.init();
+        this.resetToDefaults();
+        this.initSidebar();
+        this.initTooltips();
+        this.drawComplexityChart();
+        
+        this.loop = this.loop.bind(this);
+        requestAnimationFrame(this.loop);
+        
+        // Update slider displays
+        document.getElementById('sizeVal').textContent = this.size;
+        document.getElementById('speedVal').textContent = this.speed;
+    },
+
+    resetToDefaults() {
+        this.visualizers = [];
+        this.finishOrder = [];
+        const grid = document.getElementById('grid-area');
+        grid.innerHTML = '';
+        
+        const data = this.generateData();
+        this.raceData = [...data];
+
+        const keys = Object.keys(ALGOS);
+        keys.forEach(key => {
+            const vis = new Visualizer(key, data);
+            this.visualizers.push(vis);
+            grid.appendChild(vis.el);
+        });
+        
+        this.updateLeaderboard();
+    },
+
+    generateData() {
+        return Array.from({length: this.size}, () => Math.floor(Math.random() * 90) + 5);
+    },
+
+    startAll() {
+        AudioEngine.init();
+        this.isRunning = true;
+        this.finishOrder = [];
+        document.getElementById('btnStart').disabled = true;
+        
+        // Remove all winner classes
+        this.visualizers.forEach(v => v.el.classList.remove('winner'));
+    },
+
+    resetAll() {
+        this.isRunning = false;
+        this.finishOrder = [];
+        document.getElementById('btnStart').disabled = false;
+        
+        this.visualizers.forEach(v => {
+            v.arr = this.generateData();
+            v.el.classList.remove('winner');
+            this.resetVisState(v);
+        });
+        this.updateLeaderboard();
+    },
+
+    raceMode() {
+        this.isRunning = false;
+        this.finishOrder = [];
+        document.getElementById('btnStart').disabled = false;
+        const masterData = this.generateData();
+        this.raceData = [...masterData];
+        
+        this.visualizers.forEach(v => {
+            v.arr = [...masterData];
+            v.el.classList.remove('winner');
+            this.resetVisState(v);
+            v.els.log.textContent = 'Race Ready';
+        });
+        this.updateLeaderboard();
+    },
+
+    resetVisState(v) {
+        v.done = false;
+        v.gen = null;
+        v.startTime = null;
+        v.endTime = null;
+        v.stats = { cmp: 0, acc: 0, mem: 0 };
+        v.renderInitial();
+        v.els.cmp.textContent = '0';
+        v.els.acc.textContent = '0';
+        v.els.time.textContent = '--';
+        v.els.log.textContent = 'Ready';
+        v.els.dot.className = 'status-dot';
+    },
+
+    resize(val) {
+        this.size = parseInt(val);
+        document.getElementById('sizeVal').textContent = val;
+        this.resetAll();
+    },
+
+    setSpeed(val) {
+        this.speed = parseInt(val);
+        document.getElementById('speedVal').textContent = val;
+    },
+
+    setView(view) {
+        this.currentView = view;
+        const grid = document.getElementById('grid-area');
+        const leaderboard = document.getElementById('leaderboard-area');
+        const btnGrid = document.getElementById('viewGrid');
+        const btnLeaderboard = document.getElementById('viewLeaderboard');
+        
+        if (view === 'grid') {
+            grid.classList.remove('hidden');
+            leaderboard.classList.remove('active');
+            btnGrid.classList.add('active');
+            btnLeaderboard.classList.remove('active');
+        } else {
+            grid.classList.add('hidden');
+            leaderboard.classList.add('active');
+            btnGrid.classList.remove('active');
+            btnLeaderboard.classList.add('active');
+            this.updateLeaderboard();
+        }
+    },
+
+    updateLeaderboard() {
+        const body = document.getElementById('leaderboard-body');
+        
+        // Sort by completion (done first), then by comparisons
+        const sorted = [...this.visualizers].sort((a, b) => {
+            if (a.done && !b.done) return -1;
+            if (!a.done && b.done) return 1;
+            if (a.done && b.done) {
+                // Both done - sort by finish order if available, else by comparisons
+                const aIdx = this.finishOrder.indexOf(a.key);
+                const bIdx = this.finishOrder.indexOf(b.key);
+                if (aIdx !== -1 && bIdx !== -1) return aIdx - bIdx;
+            }
+            return a.stats.cmp - b.stats.cmp;
+        });
+        
+        // Calculate max values for relative bars
+        const maxCmp = Math.max(...this.visualizers.map(v => v.stats.cmp), 1);
+        
+        // Update stats
+        const completed = this.visualizers.filter(v => v.done);
+        document.getElementById('stat-completed').textContent = `${completed.length}/${this.visualizers.length}`;
+        
+        if (completed.length > 0) {
+            const fastest = sorted[0];
+            document.getElementById('stat-fastest').textContent = ALGOS[fastest.key].name.split(' ')[0];
+            
+            const fewestCmp = [...completed].sort((a, b) => a.stats.cmp - b.stats.cmp)[0];
+            document.getElementById('stat-fewest-cmp').textContent = ALGOS[fewestCmp.key].name.split(' ')[0];
+            
+            const fewestMem = [...completed].sort((a, b) => a.stats.acc - b.stats.acc)[0];
+            document.getElementById('stat-fewest-mem').textContent = ALGOS[fewestMem.key].name.split(' ')[0];
+        }
+        
+        body.innerHTML = sorted.map((v, i) => {
+            const algo = ALGOS[v.key];
+            const rank = i + 1;
+            const rankClass = rank === 1 ? 'rank-1' : rank === 2 ? 'rank-2' : rank === 3 ? 'rank-3' : 'rank-default';
+            
+            const minCmp = Math.min(...this.visualizers.map(x => x.stats.cmp || Infinity));
+            const maxCmpDone = Math.max(...this.visualizers.filter(x => x.done).map(x => x.stats.cmp), 1);
+            const minMem = Math.min(...this.visualizers.map(x => x.stats.acc || Infinity));
+            
+            const cmpClass = v.stats.cmp === minCmp && v.done ? 'best' : v.stats.cmp === maxCmpDone ? 'worst' : '';
+            const memClass = v.stats.acc === minMem && v.done ? 'best' : '';
+            
+            const progress = v.done ? 100 : (v.stats.cmp / maxCmp * 100);
+            
+            return `
+                <div class="leaderboard-row">
+                    <div><span class="rank-badge ${rankClass}">${rank}</span></div>
+                    <div class="algo-name">
+                        ${algo.name}
+                        <span class="complexity-badge">${algo.avgComplexity}</span>
+                    </div>
+                    <div class="metric-cell ${cmpClass}">${v.stats.cmp.toLocaleString()}</div>
+                    <div class="metric-cell ${memClass}">${v.stats.acc.toLocaleString()}</div>
+                    <div class="metric-cell">${algo.spaceComplexity}</div>
+                    <div class="metric-cell">${algo.stable ? '✓ Yes' : '✗ No'}</div>
+                    <div class="metric-cell">${algo.bestComplexity}</div>
+                    <div>
+                        <div class="time-bar-container">
+                            <div class="time-bar" style="width: ${progress}%"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    },
+
+    drawComplexityChart() {
+        const canvas = document.getElementById('complexityCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        canvas.width = canvas.offsetWidth * 2;
+        canvas.height = 600;
+        
+        const w = canvas.width;
+        const h = canvas.height;
+        const padding = 60;
+        
+        // Clear
+        ctx.fillStyle = '#111827';
+        ctx.fillRect(0, 0, w, h);
+        
+        // Draw grid
+        ctx.strokeStyle = '#1f2937';
+        ctx.lineWidth = 1;
+        for (let i = 0; i <= 10; i++) {
+            const y = padding + (h - 2 * padding) * i / 10;
+            ctx.beginPath();
+            ctx.moveTo(padding, y);
+            ctx.lineTo(w - padding, y);
+            ctx.stroke();
+        }
+        
+        // Draw complexity curves
+        const maxN = 100;
+        const maxOps = maxN * Math.log2(maxN) * 2;
+        
+        const curves = [
+            { name: 'O(n)', fn: n => n, color: '#34d399' },
+            { name: 'O(n log n)', fn: n => n * Math.log2(n), color: '#06b6d4' },
+            { name: 'O(n²)', fn: n => n * n / 10, color: '#f43f5e' },
+        ];
+        
+        curves.forEach(curve => {
+            ctx.beginPath();
+            ctx.strokeStyle = curve.color;
+            ctx.lineWidth = 3;
+            
+            for (let n = 1; n <= maxN; n++) {
+                const x = padding + (n / maxN) * (w - 2 * padding);
+                const ops = curve.fn(n);
+                const y = h - padding - (ops / maxOps) * (h - 2 * padding);
+                
+                if (n === 1) ctx.moveTo(x, y);
+                else ctx.lineTo(x, Math.max(padding, y));
+            }
+            ctx.stroke();
+        });
+        
+        // Legend
+        ctx.font = '24px Outfit';
+        curves.forEach((curve, i) => {
+            ctx.fillStyle = curve.color;
+            ctx.fillRect(w - 180, 30 + i * 35, 20, 20);
+            ctx.fillStyle = '#e5e7eb';
+            ctx.fillText(curve.name, w - 150, 47 + i * 35);
+        });
+        
+        // Axes labels
+        ctx.fillStyle = '#9ca3af';
+        ctx.font = '20px Outfit';
+        ctx.fillText('Input Size (n)', w / 2 - 50, h - 15);
+        ctx.save();
+        ctx.translate(20, h / 2);
+        ctx.rotate(-Math.PI / 2);
+        ctx.fillText('Operations', -40, 0);
+        ctx.restore();
+    },
+
+    /* --- SIDEBAR LOGIC --- */
+    initSidebar() {
+        const nav = document.getElementById('chapterNav');
+        const body = document.getElementById('bookContent');
+        
+        TEXTBOOK.forEach((chapter, index) => {
+            const btn = document.createElement('button');
+            btn.className = `chapter-btn ${index === 0 ? 'active' : ''}`;
+            btn.textContent = `${index + 1}. ${chapter.title}`;
+            btn.onclick = () => {
+                document.querySelectorAll('.chapter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                body.innerHTML = chapter.content;
+            };
+            nav.appendChild(btn);
+        });
+        
+        body.innerHTML = TEXTBOOK[0].content;
+    },
+
+    scrollChapters(direction) {
+        const nav = document.getElementById('chapterNav');
+        nav.scrollBy({ left: direction * 150, behavior: 'smooth' });
+    },
+
+    toggleSidebar(open) {
+        const sb = document.getElementById('sidebar');
+        const mask = document.getElementById('mask');
+        if(open) {
+            sb.classList.add('open');
+            mask.classList.add('active');
+        } else {
+            sb.classList.remove('open');
+            mask.classList.remove('active');
+        }
+    },
+
+    /* --- TOOLTIP LOGIC --- */
+    initTooltips() {
+        const box = document.getElementById('tooltip-box');
+        
+        document.addEventListener('mouseover', (e) => {
+            const target = e.target.closest('[data-tooltip]');
+            if (target) {
+                const key = target.getAttribute('data-tooltip');
+                if (TOOLTIPS[key]) {
+                    box.innerHTML = TOOLTIPS[key];
+                    box.style.opacity = 1;
+                }
+            }
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            box.style.left = (e.clientX + 15) + 'px';
+            box.style.top = (e.clientY + 15) + 'px';
+        });
+
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest('[data-tooltip]')) {
+                box.style.opacity = 0;
+            }
+        });
+    },
+
+    loop() {
+        if (this.isRunning) {
+            let steps = 1;
+            if (this.speed > 60) steps = 2;
+            if (this.speed > 80) steps = 5;
+            if (this.speed > 90) steps = 12;
+            if (this.speed > 98) steps = 30;
+
+            if (this.speed < 40 && Date.now() % (40 - this.speed) > 5) {
+                // skip frame for slow speeds
+            } else {
+                this.visualizers.forEach(v => {
+                    const wasDone = v.done;
+                    for(let i=0; i<steps; i++) v.step();
+                    
+                    // Track finish order
+                    if (!wasDone && v.done && !this.finishOrder.includes(v.key)) {
+                        this.finishOrder.push(v.key);
+                        
+                        // First to finish gets winner badge
+                        if (this.finishOrder.length === 1) {
+                            v.el.classList.add('winner');
+                        }
+                    }
+                });
+            }
+            
+            // Update leaderboard periodically
+            if (this.currentView === 'leaderboard' && Math.random() < 0.1) {
+                this.updateLeaderboard();
+            }
+            
+            // Check if all done
+            if (this.visualizers.every(v => v.done)) {
+                this.isRunning = false;
+                document.getElementById('btnStart').disabled = false;
+                this.updateLeaderboard();
+            }
+        }
+        requestAnimationFrame(this.loop);
+    }
+};
+
+window.onload = () => app.init();
+window.onresize = () => app.drawComplexityChart();
+</script>
+</body>
+</html>
